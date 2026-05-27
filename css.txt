@@ -1,0 +1,235 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+body {
+  background: #f0f2f5;
+  padding: 2rem 1rem;
+  color: #1a2c3e;
+}
+
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  padding: 1.5rem 2rem 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 1rem;
+}
+
+header h1 {
+  font-size: 2.2rem;
+  color: #2c3e66;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+header p {
+  color: #5a6e8a;
+  margin-top: 0.4rem;
+}
+
+/* Статистика */
+.stats {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: #eef2ff;
+  flex: 1;
+  min-width: 160px;
+  padding: 1.2rem;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  transition: 0.2s;
+}
+
+.stat-card h3 {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #2c3e66;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card span {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f4f8a;
+}
+
+/* Форма */
+.form-section {
+  background: #f8fafc;
+  border-radius: 24px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.form-row input, .form-row button {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 60px;
+  border: 1px solid #cddfe7;
+  background: white;
+  transition: 0.2s;
+}
+
+.form-row input {
+  flex: 2;
+  min-width: 150px;
+}
+
+.form-row input:focus {
+  outline: none;
+  border-color: #2c7da0;
+  box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+}
+
+.form-row button {
+  background: #2c7da0;
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.75rem 2rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.form-row button:hover {
+  background: #1f5e7e;
+  transform: scale(0.97);
+}
+
+/* Таблица */
+.table-section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 20px;
+  border: 1px solid #e2edf2;
+  background: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+}
+
+th {
+  background: #eef2fa;
+  padding: 1rem 0.8rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  border-bottom: 2px solid #d4e0e9;
+}
+
+td {
+  padding: 0.9rem 0.8rem;
+  border-bottom: 1px solid #ecf3f7;
+  text-align: center;
+  vertical-align: middle;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.empty-row td {
+  text-align: center;
+  color: #8ba0bc;
+  font-style: italic;
+  padding: 2rem;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 1.3rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.1s;
+}
+
+.delete-btn:hover {
+  color: #e74c3c;
+  transform: scale(1.1);
+}
+
+/* Кнопка очистки */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.8rem;
+}
+
+.danger {
+  background: #fff0f0;
+  color: #b33;
+  border: 1px solid #f3cfcf;
+  padding: 0.7rem 1.6rem;
+  border-radius: 40px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.danger:hover {
+  background: #fcd5d5;
+  border-color: #d99;
+}
+
+footer {
+  text-align: center;
+  max-width: 1300px;
+  margin: 1rem auto 0;
+  font-size: 0.8rem;
+  color: #6f8eaa;
+}
+
+@media (max-width: 700px) {
+  .container {
+    padding: 1rem;
+  }
+  .stat-card span {
+    font-size: 1.5rem;
+  }
+  .form-row button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Складской учёт | Логистика</title>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1Складское хозяйство</h1>
+      <p>Оперативный учёт товаров</p>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card">
+        <h3>Всего позиций</h3>
+        <span id="total-items">0</span>
+      </div>
+      <div class="stat-card">
+        <h3>Общая стоимость</h3>
+        <span id="total-value">0</span> ₽
+      </div>
+    </div>
+
+    <!-- Форма добавления товара -->
+    <section class="form-section">
+      <h2>Добавить товар</h2>
+      <div class="form-row">
+        <input type="text" id="product-name" placeholder="Наименование" autocomplete="off">
+        <input type="number" id="product-quantity" placeholder="Кол-во" min="1" value="1">
+        <input type="number" id="product-price" placeholder="Цена (руб)" min="0" step="0.01">
+        <button id="add-btn">Добавить</button>
+      </div>
+    </section>
+
+    <!-- Таблица товаров -->
+    <section class="table-section">
+      <h2>Товары на складе</h2>
+      <div class="table-wrapper">
+        <table id="stock-table">
+          <thead>
+            <tr>
+              <th>Наименование</th>
+              <th>Количество</th>
+              <th>Цена (₽)</th>
+              <th>Стоимость (₽)</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr class="empty-row">
+              <td colspan="5">Нет товаров. Добавьте первый товар!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Кнопка очистки -->
+    <div class="actions">
+      <button id="clear-all" class="danger">Очистить весь склад</button>
+    </div>
+  </div>
+</body>
+</html>

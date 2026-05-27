@@ -1,0 +1,144 @@
+let products = [];
+
+const productName = document.getElementById('product-name');
+const productQuantity = document.getElementById('product-quantity');
+const productPrice = document.getElementById('product-price');
+const addBtn = document.getElementById('add-btn');
+const tableBody = document.getElementById('table-body');
+const totalItemsSpan = document.getElementById('total-items');
+const totalValueSpan = document.getElementById('total-value');
+const clearAllBtn = document.getElementById('clear-all');
+
+function renderTable() {
+  // Очищаем тело таблицы
+  tableBody.innerHTML = '';
+
+  if (products.length === 0) {
+    const emptyRow = document.createElement('tr');
+    emptyRow.className = 'empty-row';
+    emptyRow.innerHTML = '<td colspan="5">📭 Склад пуст. Добавьте товары.</td>';
+    tableBody.appendChild(emptyRow);
+    totalItemsSpan.innerText = '0';
+    totalValueSpan.innerText = '0';
+    return;
+  }
+
+  let totalQuantity = 0;
+  let totalCost = 0;
+
+  products.forEach((product, index) => {
+    const row = document.createElement('tr');
+    const cost = product.quantity * product.price;
+    totalQuantity += product.quantity;
+    totalCost += cost;
+
+    row.innerHTML = `
+      <td>${escapeHtml(product.name)}</td>
+      <td>${product.quantity}</td>
+      <td>${product.price.toFixed(2)}</td>
+      <td>${cost.toFixed(2)}</td>
+      <td><button class="delete-btn" data-index="${index}">🗑️</button></td>
+    `;
+    tableBody.appendChild(row);
+  });
+
+  totalItemsSpan.innerText = totalQuantity;
+  totalValueSpan.innerText = totalCost.toFixed(2);
+
+  // Добавляем обработчики на кнопки удаления
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = parseInt(btn.getAttribute('data-index'));
+      deleteProduct(idx);
+    });
+  });
+}
+
+// Вспомогательная функция для защиты от XSS
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Добавление товара
+function addProduct() {
+  const name = productName.value.trim();
+  let quantity = parseInt(productQuantity.value);
+  let price = parseFloat(productPrice.value);
+
+  if (name === '') {
+    alert('Введите наименование товара');
+    return;
+  }
+  if (isNaN(quantity) || quantity <= 0) {
+    alert('Количество должно быть положительным числом');
+    return;
+  }
+  if (isNaN(price) || price < 0) {
+    alert('Цена не может быть отрицательной');
+    return;
+  }
+
+  // Округление цены до 2 знаков
+  price = Math.round(price * 100) / 100;
+
+  products.push({
+    name: name,
+    quantity: quantity,
+    price: price
+  });
+
+  // Очистка формы (кроме количества, оставляем 1 для удобства)
+  productName.value = '';
+  productPrice.value = '';
+  productQuantity.value = 1;
+
+  renderTable();
+}
+
+// Удаление товара по индексу
+function deleteProduct(index) {
+  if (index >= 0 && index < products.length) {
+    products.splice(index, 1);
+    renderTable();
+  }
+}
+
+// Очистка всего склада
+function clearAll() {
+  if (products.length === 0) return;
+  const confirmClear = confirm('Вы уверены, что хотите удалить все товары со склада?');
+  if (confirmClear) {
+    products = [];
+    renderTable();
+  }
+}
+
+// Обработчики событий
+addBtn.addEventListener('click', addProduct);
+clearAllBtn.addEventListener('click', clearAll);
+
+// Добавление по нажатию Enter (любое поле)
+const inputs = [productName, productQuantity, productPrice];
+inputs.forEach(input => {
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addProduct();
+  });
+});
+
+// Инициализация примерами (для наглядности, можно оставить пару тестовых товаров)
+function initDemo() {
+  products = [
+    { name: 'Дрель аккумуляторная', quantity: 12, price: 3500.00 },
+    { name: 'Набор отвёрток', quantity: 25, price: 890.00 },
+    { name: 'Гвозди 50мм (уп.)', quantity: 80, price: 125.50 }
+  ];
+  renderTable();
+}
+
+initDemo(); // запуск демо-данных (легко удалить или оставить для презентации)
