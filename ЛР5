@@ -1,0 +1,166 @@
+import sys
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QTableWidget, QTableWidgetItem, QLineEdit, QSpinBox, QDoubleSpinBox,
+    QPushButton, QLabel, QMessageBox, QHeaderView
+)
+from PyQt5.QtCore import Qt
+
+class WarehouseApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Складской учёт")
+        self.setFixedSize(750, 500)
+
+        #Центральный виджет
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        main_layout = QVBoxLayout(central_widget)
+
+        #Верхняя панель ввода
+        input_layout = QHBoxLayout()
+        self.name_input = QLineEdit()
+        self.name_input.setPlaceholderText("Наименование товара")
+        self.quantity_input = QSpinBox()
+        self.quantity_input.setRange(1, 100000)
+        self.quantity_input.setPrefix("Кол-во: ")
+        self.price_input = QDoubleSpinBox()
+        self.price_input.setRange(0.01, 1000000)
+        self.price_input.setPrefix("Цена: ")
+        self.price_input.setSuffix(" руб.")
+        self.add_button = QPushButton("Добавить товар")
+        self.add_button.clicked.connect(self.add_product)
+
+        input_layout.addWidget(self.name_input)
+        input_layout.addWidget(self.quantity_input)
+        input_layout.addWidget(self.price_input)
+        input_layout.addWidget(self.add_button)
+        main_layout.addLayout(input_layout)
+
+        #Таблица товаров
+        self.table = QTableWidget()
+        self.table.setColumnCount(4)
+        self.table.setHorizontalHeaderLabels(["Наименование", "Количество", "Цена (руб.)", "Стоимость (руб.)"])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.setAlternatingRowColors(True)
+        self.table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)  # только для чтения
+        main_layout.addWidget(self.table)
+
+        #Нижняя панель
+        bottom_layout = QHBoxLayout()
+        self.delete_button = QPushButton("Удалить выбранный")
+        self.delete_button.clicked.connect(self.delete_product)
+        self.clear_button = QPushButton("Очистить весь склад")
+        self.clear_button.clicked.connect(self.clear_all)
+        self.total_label = QLabel("Общая стоимость склада: 0.00 руб.")
+        self.total_label.setStyleSheet("font-weight: bold;")
+
+        bottom_layout.addWidget(self.delete_button)
+        bottom_layout.addWidget(self.clear_button)
+        bottom_layout.addStretch()
+        bottom_layout.addWidget(self.total_label)
+        main_layout.addLayout(bottom_layout)
+
+        # Инициализация данных (можно добавить пару тестовых товаров)
+        self.add_test_products()
+
+    # Добавляет примеры товаров
+    def add_test_products(self):
+        test_products = [
+            ("Дрель аккумуляторная", 12, 3500),
+            ("Набор отвёрток", 25, 890),
+            ("Гвозди 50мм", 500, 0.35)
+        ]
+        for name, qty, price in test_products:
+            self._insert_product_row(name, qty, price)
+
+    # Вставляет строку в таблицу и пересчитывает общую стоимость
+    def _insert_product_row(self, name, quantity, price):
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+
+        # Наименование
+        self.table.setItem(row, 0, QTableWidgetItem(name))
+        # Количество
+        self.table.setItem(row, 1, QTableWidgetItem(str(quantity)))
+        # Цена
+        self.table.setItem(row, 2, QTableWidgetItem(f"{price:.2f}"))
+        # Стоимость = количество * цена
+        total = quantity * price
+        self.table.setItem(row, 3, QTableWidgetItem(f"{total:.2f}"))
+
+        # Выравнивание чисел по правому краю
+        for col in (1, 2, 3):
+            self.table.item(row, col).setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+
+        self.update_total_cost()
+
+    # Обработчик добавления товара из формы
+    def add_product(self):
+        name = self.name_input.text().strip()
+        if not name:
+            QMessageBox.warning(self, "Ошибка", "Введите наименование товара")
+            return
+
+        quantity = self.quantity_input.value()
+        price = self.price_input.value()
+
+        # Проверка дубликатов
+        for row in range(self.table.rowCount()):
+            if self.table.item(row, 0).text().lower() == name.lower():
+                reply = QMessageBox.question(self, "Товар существует",
+                                             f"Товар '{name}' уже есть. Добавить ещё одну партию?",
+                                             QMessageBox.Yes | QMessageBox.No)
+                if reply == QMessageBox.No:
+                    return
+                break
+
+        self._insert_product_row(name, quantity, price)
+
+        # Очищаем поля ввода
+        self.name_input.clear()
+        self.quantity_input.setValue(1)
+        self.price_input.setValue(0.00)
+
+    # Удаляет выделенную строку
+    def delete_product(self):
+        current_row = self.table.currentRow()
+        if current_row == -1:
+            QMessageBox.information(self, "Нет выделения", "Выберите товар для удаления")
+            return
+
+        name = self.table.item(current_row, 0).text()
+        reply = QMessageBox.question(self, "Подтверждение",
+                                     f"Удалить товар '{name}'?",
+                                     QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.table.removeRow(current_row)
+            self.update_total_cost()
+
+    # Очищает всю таблицу
+    def clear_all(self):
+        if self.table.rowCount() == 0:
+            return
+        reply = QMessageBox.question(self, "Очистка склада",
+                                     "Вы уверены, что хотите удалить ВСЕ товары?",
+                                     QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.table.setRowCount(0)
+            self.update_total_cost()
+
+    def update_total_cost(self):
+        """Пересчитывает и обновляет метку общей стоимости"""
+        total = 0.0
+        for row in range(self.table.rowCount()):
+            # Стоимость находится в колонке 3 (индекс 3)
+            cost_item = self.table.item(row, 3)
+            if cost_item:
+                total += float(cost_item.text())
+        self.total_label.setText(f"Общая стоимость склада: {total:.2f} руб.")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = WarehouseApp()
+    window.show()
+    sys.exit(app.exec_())
